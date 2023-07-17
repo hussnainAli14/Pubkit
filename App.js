@@ -17,7 +17,7 @@ import * as SplashScreen from "expo-splash-screen";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from './src/utilis/Firebase-config';
 import Colors from "./src/utils/AppColors";
-import { WelcomeStack } from "./src/navigation";
+import { BottomTabs, WelcomeStack } from "./src/navigation";
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
@@ -64,7 +64,8 @@ export default function App() {
           onLayout={onLayoutRootView}
         >
          
-            <WelcomeStack />
+            {/* <WelcomeStack /> */}
+            <BottomTabs/>
           
         </View>
       </NavigationContainer>

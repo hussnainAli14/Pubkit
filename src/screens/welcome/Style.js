@@ -53,7 +53,8 @@ login_btnText:{
     fontFamily:'Outfit-Bold',
     fontSize:16,
 textAlign:'center',
-color:AppColors.white
+color:AppColors.white,
+textTransform:"uppercase"
 },
 bottom_Text:{
     paddingTop:height*0.02,

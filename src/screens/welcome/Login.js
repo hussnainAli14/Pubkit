@@ -10,10 +10,20 @@ import {
 } from "react-native";
 import Style from "./Style";
 import AppColors from "../../utils/AppColors";
+import i18next from "../../../services/i18next";
+import { useTranslation } from "react-i18next";
+
+
 const Login = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
 
+    const {t} = useTranslation();
+
+
+    const changeLng = ()=>{
+      i18next.changeLanguage('en')
+    }
   return (
     <ScrollView>
       <SafeAreaView style={Style.container}>
@@ -21,13 +31,15 @@ const Login = (props) => {
           source={require("../../../assets/images/login_logo.png")}
           style={Style.logo}
         />
-        <Text style={Style.main_Text}>Welcome Aboard.</Text>
+        <TouchableOpacity onPress={changeLng}>
+          <Text>Change Language</Text>
+        </TouchableOpacity>
+        <Text style={Style.main_Text}>{t('login-mainText')}</Text>
         <Text style={Style.main_subText}>
-          Your road to financial independence starts here. This is the exact
-          place to start your journey.
+         {t('login-mainSubText')}
         </Text>
         <TextInput
-          placeholder="Email Address"
+          placeholder={t("email-PlaceHolder")}
           keyboardType="default"
           style={Style.textInput}
           value={email}
@@ -36,7 +48,7 @@ const Login = (props) => {
           }}
         />
         <TextInput
-          placeholder="Password"
+          placeholder={t("password-PlaceHolder")}
           keyboardType="default"
           style={Style.textInput}
           value={password}
@@ -45,10 +57,10 @@ const Login = (props) => {
           }}
         />
         <TouchableOpacity style={Style.login_btn}>
-          <Text style={Style.login_btnText}>LOGIN</Text>
+          <Text style={Style.login_btnText}>{t("login-btnText")}</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
-          <Text style={Style.bottom_Text}>Don’t have an account?</Text>
+          <Text style={Style.bottom_Text}>{t("bottom-Text")}</Text>
           <TouchableOpacity
             style={{ paddingTop: 7 }}
             onPress={() => {
@@ -62,7 +74,7 @@ const Login = (props) => {
                 fontSize: 16,
               }}
             >
-              Sign Up Now
+              {t("bottom-btnText")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -79,10 +91,10 @@ const Login = (props) => {
         </Text>
         <TouchableOpacity style={Style.google_btn}>
           <Image source={require("../../../assets/images/icon_google.png")} />
-          <Text style={Style.google_btn_Text}>LOGIN WITH GOOGLE</Text>
+          <Text style={Style.google_btn_Text}>{t( "google_Btn_Text")}</Text>
         </TouchableOpacity>
         <Text style={Style.footer_Text}>
-          All rights reserved to pubkit 2023
+          {t("footer_text")}
         </Text>
       </SafeAreaView>
     </ScrollView>

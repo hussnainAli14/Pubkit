@@ -7,4 +7,10 @@ const Compaign = () => {
   )
 }
 
+export const screenOptions= ()=>{
+  return{
+    
+  }
+}
+
 export default Compaign
