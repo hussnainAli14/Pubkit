@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -12,18 +12,41 @@ import Style from "./Style";
 import AppColors from "../../utils/AppColors";
 import i18next from "../../../services/i18next";
 import { useTranslation } from "react-i18next";
-
+import { logIn } from "../../utils/authUtils";
+// import { GoogleSignin } from "react-native-google-signin";
+// import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 
 const Login = (props) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const {t} = useTranslation();
+  const { t } = useTranslation();
 
+  const changeLng = () => {
+    i18next.changeLanguage("en");
+  };
 
-    const changeLng = ()=>{
-      i18next.changeLanguage('en')
-    }
+  async function handleLogin() {
+    await logIn(email, password);
+    console.log("Login");
+  }
+
+  const handleGoogleSignIn = async () => {
+    // try {
+    //   await GoogleSignin.askForPlayServicesAsync();
+    //   const { type, user } = await GoogleSignin.signInAsync();
+    //   if (type === "success") {
+    //     const { idToken, accessToken } = user.auth;
+    //     // Configure Firebase with Google credentials
+    //     const credential = GoogleAuthProvider.credential(idToken, accessToken);
+    //     // Sign in with Firebase using Google credentials
+    //     await signInWithCredential(credential);
+    //   }
+    // } catch (error) {
+    //   console.error("Google Sign-In Error:", error);
+    // }
+  };
+
   return (
     <ScrollView>
       <SafeAreaView style={Style.container}>
@@ -34,17 +57,15 @@ const Login = (props) => {
         <TouchableOpacity onPress={changeLng}>
           <Text>Change Language</Text>
         </TouchableOpacity>
-        <Text style={Style.main_Text}>{t('login-mainText')}</Text>
-        <Text style={Style.main_subText}>
-         {t('login-mainSubText')}
-        </Text>
+        <Text style={Style.main_Text}>{t("login-mainText")}</Text>
+        <Text style={Style.main_subText}>{t("login-mainSubText")}</Text>
         <TextInput
           placeholder={t("email-PlaceHolder")}
           keyboardType="default"
           style={Style.textInput}
           value={email}
-          onChangeText={(text)=>{
-            setEmail(text)
+          onChangeText={(text) => {
+            setEmail(text);
           }}
         />
         <TextInput
@@ -52,11 +73,11 @@ const Login = (props) => {
           keyboardType="default"
           style={Style.textInput}
           value={password}
-          onChangeText={(text)=>{
-            setPassword(text)
+          onChangeText={(text) => {
+            setPassword(text);
           }}
         />
-        <TouchableOpacity style={Style.login_btn}>
+        <TouchableOpacity style={Style.login_btn} onPress={handleLogin}>
           <Text style={Style.login_btnText}>{t("login-btnText")}</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row" }}>
@@ -89,13 +110,11 @@ const Login = (props) => {
         >
           OR
         </Text>
-        <TouchableOpacity style={Style.google_btn}>
+        <TouchableOpacity style={Style.google_btn} onPress={handleGoogleSignIn}>
           <Image source={require("../../../assets/images/icon_google.png")} />
-          <Text style={Style.google_btn_Text}>{t( "google_Btn_Text")}</Text>
+          <Text style={Style.google_btn_Text}>{t("google_Btn_Text")}</Text>
         </TouchableOpacity>
-        <Text style={Style.footer_Text}>
-          {t("footer_text")}
-        </Text>
+        <Text style={Style.footer_Text}>{t("footer_text")}</Text>
       </SafeAreaView>
     </ScrollView>
   );

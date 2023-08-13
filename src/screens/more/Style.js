@@ -7,7 +7,7 @@ export default StyleSheet.create({
         paddingHorizontal:width*0.08,
         flex:1,
         // minHeight:'100%',
-        backgroundColor:AppColors.gray_light
+        // backgroundColor:AppColors.gray_light
     },
 
     infoContainer:{
@@ -55,7 +55,6 @@ export default StyleSheet.create({
     color:AppColors.white,
     textTransform:'uppercase'
     },
-
     textInput:{
         fontFamily:'Outfit-Light',
         fontSize:16,
@@ -85,7 +84,6 @@ export default StyleSheet.create({
         elevation: 5,
         paddingVertical: 20,
         paddingHorizontal: 10,
-    
         marginTop: height * 0.02,
         flexDirection: "row",
       },
@@ -106,4 +104,33 @@ export default StyleSheet.create({
         backgroundColor: AppColors.blue,
         borderRadius: 2,
       },
+
+      toggleContainer: {
+        width: 40, // Adjust the width to make it smaller
+        height: 20, // Adjust the height to make it smaller
+        borderRadius: 10,
+        justifyContent: 'center',
+        padding: 2,
+        backgroundColor:AppColors.white
+      },
+      thumb: {
+        width: 16, 
+        height: 16, 
+        borderRadius: 8,
+      },
+      divider:
+      {
+        marginTop: 7, // Add margin to bring the divider down
+        backgroundColor:AppColors.black, 
+        height: 1, 
+          width: 10, 
+          transform: [{ rotate: "90deg" }]},
+
+      details_btn:{
+        borderWidth:2,
+        borderColor:AppColors.blue_light,
+        borderRadius:15,
+        paddingVertical:height*0.005,
+        paddingHorizontal:width*0.03
+      }
 })

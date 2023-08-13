@@ -22,6 +22,7 @@
     "oldPassword-placeHolder":"Old Password",
     "NewPassword-placeHolder":"New Password",
     "confirmPassword-placeHolder":"Confirm Password",
+    "language-placeHolder":"UI Language",
 
     "signUp-btnText":"SIGN UP",
     "back-text":"Back to login screen",
@@ -45,5 +46,78 @@
     "update_password":"Update My password",
     "update-btnText":"Update",
     "change-btnText":"Change",
-    "delete_account":"Delete My account"
+    "delete_account":"Delete My account",
+
+    "message":"Messages",
+    "chat":"Chat",
+
+    "notification":"Notifications",
+
+    "compaign":"Compaigns",
+    "my_compaign":"My Compaigns",
+
+    "customer":"customer",
+    "income":"income",
+    "action":"actions",
+
+    "objective_welcome_txt":"Let us prepare you for the first step. On your way to success as an independent marketing manager.Through Ten practice and learning lessons that will earn you 100 points and will allow you to start at level 1.",
+    "objective_welcome_bold":"Welcome partner!",
+    "step":"Step",
+    "done":"Done",
+    "in_progress":"In Progress",
+    "pending":"Pending",
+
+    "compaign_text":"On the campaigns page you can view new campaigns uploaded to Pubkit. Note that campaigns are ranked according to a user's score level.",
+    "reg":"Complete Registration",
+    "intro":"INTRODUCTION VIDEO",
+    "marketing":"SOCIAL MARKETING TUTORIAL",
+    "commercial":"COMMERCIAL TUTORIAL",
+
+
+    "level":"level",
+    "require":"Required",
+    "got":"got it",
+    "guide":"Guide me",
+    "des1":"Running this campaign requires skill level ",
+    "des2":"or higher. We believe in you that you will reach this level in a short time. Keep up the great progress you are making.",
+
+    "incomes":"Incomes",
+    "reward":"Rewards",
+    "setting":"Settings",
+    
+    "deposits":"Deposits",
+    "next_deposit":"Next Deposit",
+    "next_deposit_details":"NEXT DEPOSITS DETAILS",
+    "next_deposit_date":"NEXT DEPOSIT 08/01/2023",
+    "previous_deposit_details":"PREVIOUS DEPOSITS DETAILS",
+    "activity":"Activities",
+
+    "connect_account":"connect your account",
+    "invite":"INVITE FRIENDS AND EARN",
+    "friends":"INVITE FRIENDS",
+
+    "level_des":"LEVEL DESCRIPTION",
+    "level1":"100",
+    "level2":"500",
+    "level3":"2000",
+    "level4":"3000",
+    "level5":"4500",
+    "level6":"6000",
+    "xp":"xp",
+    "ok":"ok",
+
+    "since":"since",
+    "from":"from",
+    "details":"Details",
+
+    "compaign_info":"Compaign Information",
+    "my_compaign_info":"My Compaign Information",
+    "affiliate":"Affiliate Link",
+    "description":"Description",
+    "goals":"Goals",
+    "achievements":"Achievements",
+    "activate":"Activate Compaign",
+
+    "objectiveDetails":"Objective Details"
+
 }

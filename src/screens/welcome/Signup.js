@@ -10,11 +10,27 @@ import {
 } from "react-native";
 import Style from "./Style";
 import AppColors from "../../utils/AppColors";
+
+import { signUp } from "../../utils/authUtils";
+import { Alert } from "react-native";
+
 const Signup = (props) => {
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  async function handleSignUp() {
+    signUp(email, password, firstName, lastName)
+      .then(() => {
+        // Handle successful signup if needed
+        Alert.alert("Success", "You have successfully signed up!");
+      })
+      .catch((error) => {
+        // Handle any errors during signup if needed
+        Alert.alert("Error", "An error occurred during signup.");
+      });
+  }
 
   return (
     <ScrollView>
@@ -62,9 +78,13 @@ const Signup = (props) => {
             setPassword(text);
           }}
         />
-        <TouchableOpacity style={Style.login_btn} onPress={()=>{
-            props.navigation.navigate('BottomTabs')
-        }}>
+        <TouchableOpacity
+          style={Style.login_btn}
+          onPress={() => {
+            handleSignUp();
+            // props.navigation.navigate("BottomTabs");
+          }}
+        >
           <Text style={Style.login_btnText}>SIGN UP</Text>
         </TouchableOpacity>
 
