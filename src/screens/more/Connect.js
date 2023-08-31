@@ -1,16 +1,16 @@
 import React from "react";
 import PartnerList from "../../components/PartnerList";
 import { Dimensions, SafeAreaView, ScrollView } from "react-native";
-import Style from "../Payments/Style";
 import { useState } from "react";
 import { Text } from "react-native-paper";
 import { useSelector } from "react-redux";
+import AppColors from "../../utils/AppColors";
 const { height, width } = Dimensions.get("window");
 const Connect = (props) => {
   const data = useSelector((state) => state.user);
 
   const [partner, setPartner] = useState(
-    props.route.params?.partners.filter((x) => x.id != data.id)
+    props.route.params?.partners?.filter((x) => x.id != data.id)
   );
 
   return (
@@ -21,7 +21,7 @@ const Connect = (props) => {
           paddingVertical: height * 0.04,
         }}
       >
-        {partner.length > 0 ? (
+        {partner?.length > 0 ? (
           partner.map((x) => {
             return (
               <PartnerList
@@ -36,7 +36,12 @@ const Connect = (props) => {
           })
         ) : (
           <>
-            <Text>no partner...</Text>
+            <Text style={{
+            textAlign: "center",
+            color: AppColors.pink,
+            fontFamily: "Outfit-SemiBold",
+            fontSize: 20,
+          }}>No partners...</Text>
           </>
         )}
       </SafeAreaView>

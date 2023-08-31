@@ -10,6 +10,31 @@ import {
   signInWithEmailAndPassword,
 } from "./Firebase-config";
 
+async function addObjectives(userId) {
+  const objectives = [];
+  for (let i = 1; i <= 10; i++) {
+    const objectiveStatus = i == 1 ? "in_progress" : "lock"; // Set the status based on the step number
+    const objective = {
+      stepNumber: i,
+      text: `Step ${i} Text`,
+      objectiveName: `Objective ${i}`,
+      objectiveStatus: objectiveStatus,
+      videoUrl:
+        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      objectiveDescription: `Objective ${i} Description`,
+    };
+    objectives.push(objective);
+  }
+  try {
+    await addDoc(collection(db, "tutorials objective"), {
+      objective: objectives,
+      associateId: userId,
+    });
+  } catch (error) {
+    console.log("There is an error in Sending Message", error);
+  }
+}
+
 const signUp = async (email, password, firstName, lastName) => {
   try {
     const user = await createUserWithEmailAndPassword(auth, email, password);
@@ -35,8 +60,8 @@ const signUp = async (email, password, firstName, lastName) => {
           settings: {
             uilanguage: "eng",
             isPublishInNetwork: false,
-            getNotifications: false,
-            getDailySummary: "",
+            getNotifications: true,
+            getDailySummary: false,
           },
           contact: {
             mobile: "",
@@ -44,6 +69,8 @@ const signUp = async (email, password, firstName, lastName) => {
             country: "",
           },
         });
+
+        await addObjectives(accountsRef._key.path.segments[1]);
       } catch (error) {
         console.log("There is an error in Saving Details", error);
       }
@@ -83,8 +110,26 @@ const getUserDetailsFromFirebase = async () => {
     }));
     return user[0];
   } catch (error) {
-    console.log("There is an error in Signing Up", error);
+    console.log("There is an error in getting user from Firebase", error);
+  }
+};
+
+const createNotification = async (message, associateId) => {
+  try {
+    await addDoc(collection(db, "notification"), {
+      associateId: associateId,
+      message: message,
+      createdAt: new Date().getTime(),
+    });
+  } catch (error) {
+    console.log("There is an error in Notification", error);
   }
 };
 // Export the signUp function as a named export
-export { signUp, logout, logIn, getUserDetailsFromFirebase };
+export {
+  signUp,
+  logout,
+  logIn,
+  getUserDetailsFromFirebase,
+  createNotification,
+};

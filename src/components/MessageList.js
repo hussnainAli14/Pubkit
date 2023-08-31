@@ -4,8 +4,6 @@ import { Avatar } from "react-native-paper";
 import Style from "../screens/messages/Style";
 import AppColors from "../utils/AppColors";
 import { useNavigation } from "@react-navigation/native";
-
-const { height, width } = Dimensions.get("window");
 const MessageList = (props) => {
   const navigation = useNavigation();
   return (
@@ -43,7 +41,11 @@ const MessageList = (props) => {
       <TouchableOpacity
         style={{ alignSelf: "center" }}
         onPress={() => {
-          navigation.navigate("Chat", { id: props.id });
+          navigation.navigate("Chat", {
+            id: props.id,
+            avatar: props.avatar,
+            myAvatar: props.myAvatar,
+          });
         }}
       >
         <Image source={require("../../assets/images/arrowleft2.png")} />

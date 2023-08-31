@@ -22,13 +22,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetUserStateAction } from "../../Redux/Reducers/Action/UserAction/userAction";
 
 const More = (props) => {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const data = useSelector((state) => state.user);
-
-  const [user, setUser] = useState(data);
-
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const data = useSelector((state) => state.user);
 
   const MenuDetails = [
     {
@@ -88,40 +85,35 @@ const More = (props) => {
       image: require("../../../assets/images/edit.png"),
       title: t("edit_account"),
       path: t("edit_account"),
-      propForEditAccount: {},
+      propForEditAccount: data,
     },
     {
       image: require("../../../assets/images/setting3.png"),
       title: t("settings"),
       path: t("settings"),
-      propForEditAccount: {
-        /* Add the data you want to send to EditAccount screen */
-      },
+      propForEditAccount: data,
     },
     {
       image: require("../../../assets/images/wallet.png"),
       title: t("payments"),
       path: t("payments"),
-      propForEditAccount: {
-        /* Add the data you want to send to EditAccount screen */
-      },
+      propForEditAccount: null,
     },
     {
       image: require("../../../assets/images/medalstar.png"),
       title: t("terms"),
       path: t("terms"),
-      propForEditAccount: {
-        /* Add the data you want to send to EditAccount screen */
-      },
+      propForEditAccount: null,
     },
   ];
 
+
   async function getUserDetails() {
-    const data = useSelector((state) => state.user);
-    if (data) {
-      setUser(data);
-      console.log("User", data);
-    }
+    // const data = useSelector((state) => state.user);
+    // if (data) {
+    // setUser(data);
+    console.log("User", data);
+    // }
   }
 
   useEffect(() => {
@@ -132,11 +124,7 @@ const More = (props) => {
       }
     );
     return willFocusSubscription;
-  }, []);
-
-  useEffect(() => {
-    getUserDetails();
-  }, []);
+  }, [data]);
 
   async function handleLogOut() {
     try {
@@ -153,9 +141,9 @@ const More = (props) => {
       <SafeAreaView>
         <View style={Style.infoContainer}>
           <View style={Style.innerContainer}>
-            {user.avatar ? (
+            {data.avatar ? (
               <Avatar.Image
-                source={{ uri: user.avatar.image }}
+                source={{ uri: data.avatar.image }}
                 size={80}
                 style={{
                   marginRight: 10,
@@ -182,10 +170,10 @@ const More = (props) => {
             />
             <View style={{ paddingTop: 10 }}>
               <Text style={{ fontFamily: "Outfit-Medium", fontSize: 16 }}>
-                {`${user.firstName} ${user.lastName}`}
+                {`${data.firstName} ${data.lastName}`}
               </Text>
               <Text style={{ fontFamily: "Outfit-Regular", fontSize: 12 }}>
-                {user.email}
+                {data.email}
               </Text>
               <Text
                 style={{
@@ -194,14 +182,16 @@ const More = (props) => {
                   color: AppColors.blue_light,
                 }}
               >
-                Level 0{user.level}
+                Level 0{data.level}
               </Text>
             </View>
           </View>
           <TouchableOpacity
             style={{ paddingTop: height * 0.03 }}
             onPress={() => {
-              props.navigation.navigate("Edit My Account");
+              props.navigation.navigate("Edit My Account", {
+                data: data,
+              });
             }}
           >
             <Image source={require("../../../assets/images/edit.png")} />
@@ -216,11 +206,19 @@ const More = (props) => {
             data={MenuDetails}
             renderItem={(item) => {
               return (
-                <MenuList
-                  image={item.item.image}
-                  name={item.item.title}
-                  path={item.item.path}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate(item.item.path, {
+                      // data: item.propForEditAccount,
+                    });
+                  }}
+                >
+                  <MenuList
+                    image={item.item.image}
+                    name={item.item.title}
+                    path={item.item.path}
+                  />
+                </TouchableOpacity>
               );
             }}
           />
@@ -232,7 +230,9 @@ const More = (props) => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate(item.path);
+                  navigation.navigate(item.path, {
+                    data: item.propForEditAccount,
+                  });
                 }}
               >
                 <MenuList

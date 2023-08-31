@@ -1,19 +1,33 @@
-import { collection, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../utils/Firebase-config";
+import { useSelector } from "react-redux";
+import { createNotification } from "../../utils/authUtils";
 
-const getAllCampaign = async () => {
+const getAllCampaign = async (userId) => {
   try {
     // const chatList = [];
     // // Get the list of unique users (persons) that the current user has chatted with
     const campaignRef = await getDocs(collection(db, "campaigns"));
     const accountsRef = await getDocs(collection(db, "accounts"));
 
-    let campaigns = await Promise.all(
-      campaignRef.docs
-        .map(async (x) => {
-          const campaignData = x.data();
-          const campaignId = x.id;
+    const userAccountRef = doc(db, "accounts", userId);
+    const userAccount = (await getDoc(userAccountRef)).data();
 
+    let campaigns = await Promise.all(
+      campaignRef.docs.map(async (x) => {
+        const campaignData = x.data();
+
+        const campaignId = x.id;
+
+        if (!userAccount.campaign.includes(campaignId)) {
           // Filter accounts whose campaigns array contains the current campaignId
           const partnerAccounts = accountsRef.docs
             .map((accountDoc) => ({
@@ -27,41 +41,56 @@ const getAllCampaign = async () => {
             id: campaignId,
             partner: partnerAccounts,
           };
-        })
-        .sort((a, b) => a.entryLevel - b.entryLevel)
+        }
+      })
     );
+    campaigns = campaigns.filter((campaign) => campaign != null);
 
-    campaigns = campaigns.sort((a, b) => a.entryLevel - b.entryLevel);
+    console.log("==============>>>>>>>>>>>>>>>>>", campaigns);
+    campaigns =
+      campaigns.length > 0
+        ? campaigns.sort((a, b) => a.entryLevel - b.entryLevel)
+        : [];
 
     return campaigns;
   } catch (error) {
     console.log("Error getting Campignss", error);
   }
 };
+
 const getAllMyCampaign = async (campaignIDs) => {
   const campaigns = [];
-  console.log(`Campaign `, campaignIDs);
 
   try {
     for (const campaignID of campaignIDs) {
       const campaignRef = await getDocs(collection(db, "campaigns"));
-      console.log(campaignRef.docs.map((campaignDoc) => campaignDoc.id));
-      // const campaignDoc = await getDocs(campaignRef);
-      // if (!campaignDoc.empty) {
-      // Document exists, add it to the campaigns array
-      // const campaignData = campaignDoc.docs[0].data();
-      // console.log(`Campaign `, campaignData);
+      const campaignData = campaignRef.docs
+        .filter((campaignDoc) => campaignDoc.id == campaignID)
+        .map((x) => x.data());
 
-      // campaigns.push(campaignData);
-      // } else {
-      // console.log(`Campaign with ID ${campaignID} not found.`);
-      // }
+      campaigns.push(campaignData);
     }
+    console.log("Error getting campaigns:=>", campaigns[0]);
     return campaigns;
   } catch (error) {
-    console.error("Error getting campaigns:", error);
+    console.error("Error getting campaigns:=>", error);
     return []; // Return an empty array in case of an error
   }
 };
 
-export { getAllCampaign, getAllMyCampaign };
+const activiateCampaign = async (campaignId, user) => {
+  try {
+    const documentRef = doc(db, "accounts", user.id);
+
+    // Update the `campaigns` array field with the new value (campaignId)
+    await updateDoc(documentRef, {
+      campaign: arrayUnion(campaignId),
+    });
+    if (user.settings.getNotifications) {
+      await createNotification("New campaign Activated", user.id);
+    }
+  } catch (error) {
+    console.error("Error in campaign:", error);
+  }
+};
+export { getAllCampaign, getAllMyCampaign, activiateCampaign };

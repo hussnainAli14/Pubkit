@@ -1,4 +1,5 @@
 import { updateUserDetails } from "../../../../screens/more/moreUtil";
+import { getUserDetailsFromFirebase } from "../../../../utils/authUtils";
 
 const setUserValueAction = (newUserValue) => {
   return {
@@ -76,6 +77,16 @@ const resetUserStateAction = () => {
   return { type: "resetUserData" };
 };
 
+const fetchUserDetailsAndDispatch = async (dispatch) => {
+  try {
+    const user = await getUserDetailsFromFirebase();
+    console.log("User Details", user);
+    dispatch(setUserValueAction(user));
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+  }
+};
+
 export {
   setUserValueAction,
   setUserFirstNameValueAction,
@@ -88,4 +99,5 @@ export {
   setUserContactValueAction,
   setEditMyAccountValueAction,
   resetUserStateAction,
+  fetchUserDetailsAndDispatch,
 };

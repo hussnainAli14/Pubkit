@@ -11,12 +11,13 @@ const { height, width } = Dimensions.get("window");
 
 const Compaigns = (props) => {
   const [campaigns, setCampaigns] = useState([]);
+  const data = useSelector((state) => state.user);
   const { t } = useTranslation();
-
   const [visible, setVisible] = useState(false);
 
   async function getAllCampaigns() {
-    const camp = await getAllCampaign();
+    console.log(data.id);
+    const camp = await getAllCampaign(data.id);
     setCampaigns(camp);
   }
 
@@ -32,20 +33,8 @@ const Compaigns = (props) => {
 
   useEffect(() => {
     getAllCampaigns();
-    console.log(
-      "HELLOOO",
-      campaigns.map((x) => x.partner)
-    );
+    console.log("HELLOOO", data.settings.getNotifications);
   }, []);
-
-  const handlePress = () => {
-    console.log("abc");
-    setVisible(true);
-  };
-
-  const hideDialog = () => {
-    setVisible(false);
-  };
 
   const handleNavigation = (campaign) => {
     props.navigation.navigate("Compaign Information", {
@@ -68,18 +57,20 @@ const Compaigns = (props) => {
           {t("compaign_text")}
         </Text>
 
-        {campaigns.map((x) => {
-          return (
-            <CustomerLevelList
-              bgColor={AppColors.blue}
-              handlePress={handlePress}
-              visible={visible}
-              hideDialog={hideDialog}
-              handleNavigation={handleNavigation}
-              campaignsData={x}
-            />
-          );
-        })}
+        {campaigns &&
+          campaigns.map((x) => {
+            return (
+              <CustomerLevelList
+                bgColor={AppColors.blue}
+                // handlePress={handlePress}
+                // visible={visible}
+                // hideDialog={hideDialog}
+                handleNavigation={handleNavigation}
+                campaignsData={x}
+                userData={data}
+              />
+            );
+          })}
       </SafeAreaView>
     </ScrollView>
   );

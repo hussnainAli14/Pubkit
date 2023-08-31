@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
-  KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
   Text,
@@ -12,19 +11,11 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { Avatar, Button } from "react-native-paper";
+import { Avatar } from "react-native-paper";
 import Style from "./Style";
-import AppColors from "../../utils/AppColors";
-import {
-  db,
-  collection,
-  orderBy,
-  onSnapshot,
-  docs,
-} from "../../utils/Firebase-config";
 const { height, width } = Dimensions.get("window");
 
-import { getUser, sendMessage, listenForMessages } from "./messagesUtils";
+import { sendMessage, listenForMessages } from "./messagesUtils";
 import { useSelector } from "react-redux";
 
 // Initialize Firestore
@@ -35,18 +26,7 @@ const Chat = (props) => {
   const [user, setUser] = useState(data);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const receiverId = props.route.params.id; // Replace with the actual receiver's user id
-
-  // Fetch user details on component mount
-  // useEffect(() => {
-  //   async function fetchUserDetails() {
-  //     const userDetails = await getUser();
-  //     setUser(userDetails);
-  //     console.log("DONE!!!!");
-  //   }
-  //   fetchUserDetails();
-  // }, []);
-
+  const receiverId = props.route.params.id; 
   // Listen for incoming chat messages on component mount
   useEffect(() => {
     if (user) {
@@ -83,14 +63,20 @@ const Chat = (props) => {
             style={{
               flexDirection: "row-reverse",
               justifyContent: "space-around",
-              marginBottom: 10,
               paddingHorizontal: width * 0.05,
             }}
           >
-            <Avatar.Image
-              source={require("../../../assets/images/avatar.png")}
-              size={55}
-            />
+            {props.route.params.myAvatar ? (
+              <Avatar.Image
+                source={{ uri: props.route.params.myAvatar.image }}
+              />
+            ) : (
+              <Avatar.Image
+                source={{
+                  uri: "https://thinksport.com.au/wp-content/uploads/2020/01/avatar-.jpg",
+                }}
+              />
+            )}
             <View style={Style.text}>
               <Text style={{ fontFamily: "Outfit-Light", fontSize: 14 }}>
                 {" "}
@@ -107,10 +93,17 @@ const Chat = (props) => {
               paddingHorizontal: width * 0.05,
             }}
           >
-            <Avatar.Image
-              source={require("../../../assets/images/avatar.png")}
-              size={55}
-            />
+            {!props.route.params.avatar.isPrivate ? (
+              <Avatar.Image
+                source={{ uri: props.route.params.avatar.image }}
+              />
+            ) : (
+              <Avatar.Image
+                source={{
+                  uri: "https://thinksport.com.au/wp-content/uploads/2020/01/avatar-.jpg",
+                }}
+              />
+            )}
             <View style={Style.text_reverse}>
               <Text style={{ fontFamily: "Outfit-Light", fontSize: 14 }}>
                 {" "}
@@ -119,14 +112,12 @@ const Chat = (props) => {
             </View>
           </View>
         )}
-
-        {/* <Text style={styles.messageContent}>{item.content}</Text> */}
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={{ marginVertical: height * 0.05, flex: 1 }}>
+    <SafeAreaView style={{ marginTop: height * 0.05, flex: 1 }}>
       <ScrollView contentContainerStyle={{ justifyContent: "space-between" }}>
         <FlatList
           data={messages}
@@ -138,7 +129,6 @@ const Chat = (props) => {
 
       <View style={Style.chatContiner}>
         <TextInput
-          //   placeholder={t("email-PlaceHolder")}
           keyboardType="default"
           style={Style.textInput}
           value={message}

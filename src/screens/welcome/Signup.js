@@ -13,21 +13,26 @@ import AppColors from "../../utils/AppColors";
 
 import { signUp } from "../../utils/authUtils";
 import { Alert } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 const Signup = (props) => {
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSignUp() {
+    setIsLoading(true);
     signUp(email, password, firstName, lastName)
       .then(() => {
         // Handle successful signup if needed
+        setIsLoading(false);
         Alert.alert("Success", "You have successfully signed up!");
       })
       .catch((error) => {
         // Handle any errors during signup if needed
+        setIsLoading(false);
         Alert.alert("Error", "An error occurred during signup.");
       });
   }
@@ -72,6 +77,7 @@ const Signup = (props) => {
         <TextInput
           placeholder="Password"
           keyboardType="default"
+          secureTextEntry={true}
           style={Style.textInput}
           value={password}
           onChangeText={(text) => {
@@ -85,7 +91,17 @@ const Signup = (props) => {
             // props.navigation.navigate("BottomTabs");
           }}
         >
-          <Text style={Style.login_btnText}>SIGN UP</Text>
+          <Text style={Style.login_btnText}>
+            {isLoading ? (
+              <ActivityIndicator
+                color={AppColors.pink}
+                size={30}
+                style={{ alignSelf: "center" }}
+              />
+            ) : (
+              "SIGN UP"
+            )}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity

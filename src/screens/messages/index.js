@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, Text, View } from "react-native";
+import { Dimensions, FlatList, View } from "react-native";
 import MessageList from "../../components/MessageList";
 import Style from "./Style";
-const { height, width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 import { getChatList } from "./messagesUtils";
-import { auth } from "../../utils/Firebase-config";
 import { useSelector } from "react-redux";
+import { Text } from "react-native";
+import AppColors from "../../utils/AppColors";
 
 const Messages = () => {
   const [chatList, setChatList] = useState([]);
@@ -17,7 +18,6 @@ const Messages = () => {
       const userId = data.id;
       const chatListData = await getChatList(userId);
       setChatList(chatListData);
-      console.log("===>>>", chatListData);
     }
 
     fetchChatList();
@@ -25,18 +25,32 @@ const Messages = () => {
 
   return (
     <View style={[Style.container, { paddingVertical: height * 0.04 }]}>
-      <FlatList
-        data={chatList}
-        renderItem={({ item }) => (
-          <MessageList
-            name={item.name}
-            msg={item.latestMessage}
-            id={item.id}
-            avatar={item.avatar}
-          />
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
+      {chatList.length > 0 ? (
+        <FlatList
+          data={chatList}
+          renderItem={({ item }) => (
+            <MessageList
+              name={item.name}
+              msg={item.latestMessage}
+              id={item.id}
+              avatar={item.avatar}
+              myAvatar={data.avatar}
+            />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      ) : (
+        <Text
+          style={{
+            textAlign: "center",
+            color: AppColors.pink,
+            fontFamily: "Outfit-SemiBold",
+            fontSize: 20,
+          }}
+        >
+          No Chats To Show
+        </Text>
+      )}
     </View>
   );
 };

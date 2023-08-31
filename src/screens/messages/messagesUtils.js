@@ -12,6 +12,7 @@ import {
   collectionGroup,
 } from "firebase/firestore";
 import { auth, db } from "./../../utils/Firebase-config";
+import { createNotification } from "../../utils/authUtils";
 
 // Function to fetch the user's details
 const getUser = async () => {
@@ -64,6 +65,8 @@ const sendMessage = async (content, senderId, receiverId) => {
       receiverId: receiverId,
       timestamp: new Date(),
     });
+
+    await createNotification("You recieved a message", receiverId);
   } catch (error) {
     console.log("There is an error in Sending Message", error);
   }
@@ -115,26 +118,45 @@ const getChatList = async (userId) => {
 
     for (const user of uniqueUsers) {
       const chatRef = collection(db, "messages");
-      const chatQuery = query(
+      const senderQuery = query(
         chatRef,
-        (where("senderId", "==", userId) &&
-          where("receiverId", "==", user.id)) ||
-          (where("receiverId", "==", userId) &&
-            where("senderId", "==", user.id)),
+        where("senderId", "==", userId),
+        where("receiverId", "==", user.id),
         orderBy("timestamp", "desc"),
         limit(1)
       );
 
-      const chatQuerySnapshot = await getDocs(chatQuery);
-      const latestMessage = chatQuerySnapshot.docs.map((doc) => doc.data())[0];
+      const receiverQuery = query(
+        chatRef,
+        where("senderId", "==", user.id),
+        where("receiverId", "==", userId),
+        orderBy("timestamp", "desc"),
+        limit(1)
+      );
 
-      console.log("latestMessage=====>>>>", latestMessage);
+      const [senderSnapshot, receiverSnapshot] = await Promise.all([
+        getDocs(senderQuery),
+        getDocs(receiverQuery),
+      ]);
+
+      const latestSenderMessage = senderSnapshot.docs[0]?.data();
+      const latestReceiverMessage = receiverSnapshot.docs[0]?.data();
+
+      const latestMessage =
+        latestSenderMessage?.timestamp > latestReceiverMessage?.timestamp
+          ? latestSenderMessage
+          : latestReceiverMessage;
+
+      if (!latestMessage) {
+        continue;
+      }
+
       // Add the person's name and latest message to the chatList array
       chatList.push({
         avatar: user.avatar,
         id: user.id,
-        name: user.lastName,
-        latestMessage: latestMessage ? latestMessage.content : "No messages",
+        name: user.firstName + " " + user.lastName,
+        latestMessage: latestMessage.content || "No messages",
       });
     }
 

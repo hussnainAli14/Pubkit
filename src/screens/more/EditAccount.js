@@ -10,68 +10,122 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Avatar } from "react-native-paper";
+import { ActivityIndicator, Avatar } from "react-native-paper";
 import AppColors from "../../utils/AppColors";
 import Style from "./Style";
-const { height, width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 import { useTranslation } from "react-i18next";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { changePassword, updateUserDetails } from "./moreUtil";
-import { useDispatch, useSelector } from "react-redux";
-import { setEditMyAccountValueAction } from "../../Redux/Reducers/Action/UserAction/userAction";
+import {
+  HandleFileUpload,
+  changePassword,
+  deleteAccount,
+  pickImage,
+  updateUserDetails,
+} from "./moreUtil";
+import { useDispatch } from "react-redux";
+import { fetchUserDetailsAndDispatch } from "../../Redux/Reducers/Action/UserAction/userAction";
+import * as ImagePicker from "expo-image-picker";
+import { useNavigation } from "@react-navigation/native";
 
 const EditAccount = (props) => {
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const data = useSelector((state) => state.user);
-  ///////
-
-  useEffect(() => {
-    console.log("======.>>>>", data);
-  }, []);
-
-  const [user, setUser] = useState(data);
-
-  const [firstName, setfirstName] = useState(data?.firstName);
-  const [lastName, setlastName] = useState(data?.lastName);
-  const [email, setEmail] = useState(data?.email);
-  const [level, setLevel] = useState(data?.level);
-  const [birthDate, setBirthDate] = useState(data?.dob);
-  const [location, setLocation] = useState(data?.contact.country);
+  console.log("======.>>>>", props.route.params);
+  const [user, setUser] = useState(props.route.params?.data);
+  const [firstName, setfirstName] = useState(
+    props.route.params?.data?.firstName
+  );
+  const [lastName, setlastName] = useState(props.route.params?.data?.lastName);
+  const [email, setEmail] = useState(props.route.params?.data?.email);
+  const [level, setLevel] = useState(props.route.params?.data?.level);
+  const [birthDate, setBirthDate] = useState(props.route.params?.data?.dob);
+  const [location, setLocation] = useState(
+    props.route.params?.data?.contact.country
+  );
   const [oldpassword, setOldPassword] = useState("");
   const [newpassword, setNewPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-  const [gender, setGender] = useState(data?.gender);
+  const [gender, setGender] = useState(props.route.params?.data?.gender);
+  const [selectedAccountAvatar, setSelectedAccountAvatar] = useState(
+    props.route.params?.data?.avatar.image
+  );
+  const [isLoading, setisLoading] = useState(false);
+  const [isPasswordUpdating, setIsPasswordUpdating] = useState(false);
 
   async function handleUpdateUserDetails() {
-    dispatch(
-      setEditMyAccountValueAction(firstName, lastName, birthDate, gender, {
-        mobile: "",
-        city: "",
-        country: location,
-      })
-    );
+    let _avatar = "";
+    setisLoading(true);
+    if (selectedAccountAvatar !== null) {
+      _avatar = await HandleFileUpload(selectedAccountAvatar);
+    }
     await updateUserDetails(
-      user.id,
+      _avatar,
+      user,
       firstName,
       lastName,
       birthDate,
       gender,
       location
     );
+    await fetchUserDetailsAndDispatch(dispatch);
     console.log("User Updated");
-    props.navigation.navigate("More");
+    setisLoading(false);
+
+    navigation.navigate("More");
   }
 
   async function handlePasswordChange() {
     if (newpassword == confirmpassword) {
-      changePassword(oldpassword, newpassword);
+      setIsPasswordUpdating(true);
+      changePassword(oldpassword, newpassword, user);
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
     }
+    setIsPasswordUpdating(false);
     Alert.alert("Your Password is Updated");
+  }
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    console.log("================>>>>>>>>>>>>>>>>>>>", result.assets[0]);
+    if (!result.canceled) {
+      setSelectedAccountAvatar(result.assets[0].uri);
+    }
+  };
+
+  const HandleFileUpload = async (source) => {
+    setisLoading(true);
+    let sourceuri = source;
+    let newFile = {
+      uri: sourceuri,
+      type: `test/${sourceuri.split(".")[1]}`,
+      name: `test.${sourceuri.split(".")[1]}`,
+    };
+    const data = new FormData();
+    data.append("file", newFile);
+    data.append("upload_preset", "unitedUploads");
+    data.append("cloud_name", "united-app");
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/united-app/image/upload",
+      {
+        method: "post",
+        body: data,
+      }
+    );
+    const result = await res.json();
+    return result.secure_url;
+  };
+
+  async function deleteMyAccount() {
+    await deleteAccount(user.id);
   }
 
   const RadioButton = ({ selected, onPress }) => (
@@ -101,29 +155,19 @@ const EditAccount = (props) => {
     <ScrollView>
       <SafeAreaView style={Style.container}>
         <View style={{ alignItems: "center", marginTop: height * 0.05 }}>
-          {data.avatar ? (
-            <Avatar.Image
-              source={{ uri: data.avatar.image }}
-              size={80}
-              style={{
-                marginRight: 10,
-                marginLeft: 10,
-                position: "relative",
-              }}
-            />
-          ) : (
-            <Avatar.Image
-              source={{
-                uri: "https://thinksport.com.au/wp-content/uploads/2020/01/avatar-.jpg",
-              }}
-              size={80}
-              style={{
-                marginRight: 10,
-                marginLeft: 10,
-                position: "relative",
-              }}
-            />
-          )}
+          <TouchableOpacity onPress={pickImage}>
+            {selectedAccountAvatar && (
+              <Avatar.Image
+                source={{ uri: selectedAccountAvatar }}
+                size={80}
+                style={{
+                  marginRight: 10,
+                  marginLeft: 10,
+                  position: "relative",
+                }}
+              />
+            )}
+          </TouchableOpacity>
           <Image
             source={require("../../../assets/images/medalstar.png")}
             style={{
@@ -247,7 +291,17 @@ const EditAccount = (props) => {
             style={Style.login_btn}
             onPress={handleUpdateUserDetails}
           >
-            <Text style={Style.login_btnText}>{t("update-btnText")}</Text>
+            <Text style={Style.login_btnText}>
+              {isLoading ? (
+                <ActivityIndicator
+                  color={AppColors.pink}
+                  size={30}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                t("update-btnText")
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -259,6 +313,7 @@ const EditAccount = (props) => {
             keyboardType="default"
             style={Style.textInput}
             value={oldpassword}
+            secureTextEntry={true}
             onChangeText={(text) => {
               setOldPassword(text);
             }}
@@ -266,6 +321,7 @@ const EditAccount = (props) => {
           <TextInput
             placeholder={t("NewPassword-placeHolder")}
             keyboardType="default"
+            secureTextEntry={true}
             style={Style.textInput}
             value={newpassword}
             onChangeText={(text) => {
@@ -276,6 +332,7 @@ const EditAccount = (props) => {
             placeholder={t("confirmPassword-placeHolder")}
             keyboardType="default"
             style={Style.textInput}
+            secureTextEntry={true}
             value={confirmpassword}
             onChangeText={(text) => {
               setConfirmPassword(text);
@@ -285,11 +342,24 @@ const EditAccount = (props) => {
             style={Style.login_btn}
             onPress={handlePasswordChange}
           >
-            <Text style={Style.login_btnText}>{t("change-btnText")}</Text>
+            <Text style={Style.login_btnText}>
+              {isPasswordUpdating ? (
+                <ActivityIndicator
+                  color={AppColors.pink}
+                  size={30}
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                t("change-btnText")
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[Style.logOut_btn, { marginBottom: 10 }]}>
+        <TouchableOpacity
+          style={[Style.logOut_btn, { marginBottom: 10 }]}
+          onPress={deleteMyAccount}
+        >
           <Text style={Style.login_btnText}>{t("delete_account")}</Text>
         </TouchableOpacity>
       </SafeAreaView>

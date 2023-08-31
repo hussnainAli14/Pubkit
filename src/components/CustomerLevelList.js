@@ -10,45 +10,51 @@ import { useSelector } from "react-redux";
 const { height, width } = Dimensions.get("window");
 
 const CustomerLevelList = (props) => {
-  const data = useSelector((state) => state.user);
-
-  console.log("===>>>", props.campaignsData.entryLevel);
-
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
 
+  const handlePress = () => {
+    console.log("abc");
+    setVisible(true);
+  };
+
+  const hideDialog = () => {
+    setVisible(false);
+  };
+  console.log(props);
+
+  const entryLevel =
+    props.campaignsData.entryLevel > 0 ? props.campaignsData.entryLevel : 0;
   const bgColor =
-    props.campaignsData.entryLevel > data.level
-      ? AppColors.gray
-      : AppColors.blue_light;
+    entryLevel > props.userData.level ? AppColors.gray : AppColors.blue_light;
 
   return (
     <TouchableOpacity
       style={{ marginBottom: height * 0.02 }}
       onPress={() => {
-        if (props.campaignsData.entryLevel <= data.level) {
+        if (entryLevel <= props.userData.level) {
           //   // If the condition is true, call the handleNavigation function
           props.handleNavigation(props.campaignsData);
-          console.log("===>>>", props.campaignsData.entryLevel);
-          console.log("DATALEVEL===>>>", data.level);
+          console.log("===>>>", entryLevel);
+          console.log("DATALEVEL===>>>", props.userData.level);
         } else {
-          props.handlePress();
+          handlePress();
         }
       }}
     >
       <LevelModal
         Image={require("../../assets/images/Group13.png")}
-        handlePress={props.handlePress}
-        visible={props.visible}
-        hideDialog={props.hideDialog}
+        handlePress={handlePress}
+        visible={visible}
+        hideDialog={hideDialog}
+        level={props.campaignsData.entryLevel}
       />
       <View style={Style.majorContainer}>
         <View style={Style.innerContainer}>
           <Text style={[Style.text, { width: width * 0.25 }]}>
             {t("customer")}
           </Text>
-          <Text style={[Style.text]}>
-            Level {props.campaignsData.entryLevel}
-          </Text>
+          <Text style={[Style.text]}>Level {entryLevel}</Text>
         </View>
 
         <View style={[Style.innerContainer, { paddingTop: 5 }]}>
